@@ -959,7 +959,7 @@ class DefaultAssetPickerBuilderDelegate
         child: pathEntitySelector(context),
       ),
       leading: backButton(context),
-      actions: [reverseAssetOrderButton(context)],
+      // actions: [reverseAssetOrderButton(context)],
       blurRadius: isAppleOS(context) ? appleOSBlurRadius : 0,
     );
     appBarPreferredSize ??= appBar.preferredSize;
