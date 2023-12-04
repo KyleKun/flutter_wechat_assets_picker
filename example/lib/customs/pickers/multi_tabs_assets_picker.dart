@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:wechat_assets_picker/wechat_assets_picker.dart';
+import 'package:wechat_camera_picker/wechat_camera_picker.dart';
 
 import '../../constants/extensions.dart';
 
@@ -36,13 +37,11 @@ class _MultiTabAssetPickerState extends State<MultiTabAssetPicker> {
       selectedAssets: entities,
       maxAssets: maxAssets,
     );
-    final DefaultAssetPickerProvider imagesProvider =
-        DefaultAssetPickerProvider(
+    final DefaultAssetPickerProvider imagesProvider = DefaultAssetPickerProvider(
       selectedAssets: entities,
       maxAssets: maxAssets,
     );
-    final DefaultAssetPickerProvider videosProvider =
-        DefaultAssetPickerProvider(
+    final DefaultAssetPickerProvider videosProvider = DefaultAssetPickerProvider(
       selectedAssets: entities,
       maxAssets: maxAssets,
       requestType: RequestType.video,
@@ -111,9 +110,7 @@ class _MultiTabAssetPickerState extends State<MultiTabAssetPicker> {
                   ),
                   if (entities.isNotEmpty)
                     Icon(
-                      isDisplayingDetail
-                          ? Icons.arrow_downward
-                          : Icons.arrow_upward,
+                      isDisplayingDetail ? Icons.arrow_downward : Icons.arrow_upward,
                       size: 18.0,
                     ),
                 ],
@@ -303,8 +300,7 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
               borderRadius: BorderRadius.circular(999),
               color: theme.dividerColor,
             ),
-            child: Selector<DefaultAssetPickerProvider,
-                PathWrapper<AssetPathEntity>?>(
+            child: Selector<DefaultAssetPickerProvider, PathWrapper<AssetPathEntity>?>(
               selector: (_, DefaultAssetPickerProvider p) => p.currentPath,
               builder: (_, PathWrapper<AssetPathEntity>? p, Widget? w) => Row(
                 mainAxisSize: MainAxisSize.min,
@@ -386,9 +382,8 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(3),
           ),
-          onPressed: p.isSelectedNotEmpty
-              ? () => Navigator.of(context).maybePop(p.selectedAssets)
-              : null,
+          onPressed:
+              p.isSelectedNotEmpty ? () => Navigator.of(context).maybePop(p.selectedAssets) : null,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           child: Text(
             p.isSelectedNotEmpty && !isSingleAssetMode
@@ -514,8 +509,7 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
   Widget _buildGrid(BuildContext context) {
     return Consumer<DefaultAssetPickerProvider>(
       builder: (BuildContext context, DefaultAssetPickerProvider p, __) {
-        final bool shouldDisplayAssets =
-            p.hasAssetsToDisplay || shouldBuildSpecialItem;
+        final bool shouldDisplayAssets = p.hasAssetsToDisplay || shouldBuildSpecialItem;
         return AnimatedSwitcher(
           duration: const Duration(milliseconds: 300),
           child: shouldDisplayAssets
@@ -551,10 +545,7 @@ class MultiTabAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
             child: Stack(
               fit: StackFit.expand,
               children: <Widget>[
-                if (isAppleOS(context))
-                  appleOSLayout(context)
-                else
-                  androidLayout(context),
+                if (isAppleOS(context)) appleOSLayout(context) else androidLayout(context),
                 if (Platform.isIOS) iOSPermissionOverlay(context),
               ],
             ),
