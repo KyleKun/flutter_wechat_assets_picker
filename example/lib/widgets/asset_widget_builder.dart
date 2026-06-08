@@ -3,8 +3,8 @@
 // in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:wechat_assets_picker/wechat_assets_picker.dart' show AssetEntity, AssetType;
-import 'package:wechat_camera_picker/wechat_camera_picker.dart';
+import 'package:wechat_assets_picker/wechat_assets_picker.dart'
+    show AssetEntity, AssetEntityImageProvider, AssetType;
 
 class AssetWidgetBuilder extends StatelessWidget {
   const AssetWidgetBuilder({

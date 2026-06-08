@@ -1,7 +1,6 @@
-//
-// [Author] Alex (https://github.com/AlexV525)
-// [Date] 2022/09/20 16:35
-//
+// Copyright 2019 The FlutterCandies author. All rights reserved.
+// Use of this source code is governed by an Apache license that can be found
+// in the LICENSE file.
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,13 +36,14 @@ Widget defaultPickerTestApp({
       Locale('ar'),
       Locale('fr'),
       Locale('vi'),
+      Locale('ko'),
     ],
     locale: locale,
   );
 }
 
 class _DefaultHomePage extends StatelessWidget {
-  const _DefaultHomePage(this.onButtonPressed, {Key? key}) : super(key: key);
+  const _DefaultHomePage(this.onButtonPressed);
 
   final void Function(BuildContext)? onButtonPressed;
 
@@ -52,7 +52,9 @@ class _DefaultHomePage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: TextButton(
-          onPressed: () => onButtonPressed?.call(context),
+          onPressed: () {
+            onButtonPressed?.call(context);
+          },
           child: const Text(_testButtonText),
         ),
       ),
@@ -71,7 +73,9 @@ class TestPhotoManagerPlugin extends PhotoManagerPlugin {
 
 class TestAssetPickerDelegate extends AssetPickerDelegate {
   @override
-  Future<PermissionState> permissionCheck() async {
+  Future<PermissionState> permissionCheck({
+    PermissionRequestOption requestOption = const PermissionRequestOption(),
+  }) async {
     return SynchronousFuture<PermissionState>(PermissionState.authorized);
   }
 
@@ -80,10 +84,20 @@ class TestAssetPickerDelegate extends AssetPickerDelegate {
     BuildContext context, {
     Key? key,
     AssetPickerConfig pickerConfig = const AssetPickerConfig(),
+    PermissionRequestOption? permissionRequestOption,
     bool useRootNavigator = true,
+    RouteSettings? pageRouteSettings,
     AssetPickerPageRouteBuilder<List<AssetEntity>>? pageRouteBuilder,
   }) async {
-    final PermissionState ps = await permissionCheck();
+    permissionRequestOption ??= PermissionRequestOption(
+      androidPermission: AndroidPermission(
+        type: pickerConfig.requestType,
+        mediaLocation: false,
+      ),
+    );
+    final PermissionState ps = await permissionCheck(
+      requestOption: permissionRequestOption,
+    );
     final AssetPathEntity pathEntity = AssetPathEntity(
       id: 'test',
       name: 'pathEntity',
@@ -106,8 +120,10 @@ class TestAssetPickerDelegate extends AssetPickerDelegate {
       )
       ..hasAssetsToDisplay = true
       ..totalAssetsCount = 1;
-    final Widget picker = AssetPicker<AssetEntity, AssetPathEntity>(
+    final picker = AssetPicker<AssetEntity, AssetPathEntity,
+        DefaultAssetPickerBuilderDelegate>(
       key: key,
+      permissionRequestOption: permissionRequestOption,
       builder: DefaultAssetPickerBuilderDelegate(
         provider: provider,
         initialPermission: ps,
@@ -116,8 +132,7 @@ class TestAssetPickerDelegate extends AssetPickerDelegate {
         gridThumbnailSize: pickerConfig.gridThumbnailSize,
         previewThumbnailSize: pickerConfig.previewThumbnailSize,
         specialPickerType: pickerConfig.specialPickerType,
-        specialItemPosition: pickerConfig.specialItemPosition,
-        specialItemBuilder: pickerConfig.specialItemBuilder,
+        specialItems: pickerConfig.specialItems,
         loadingIndicatorBuilder: pickerConfig.loadingIndicatorBuilder,
         selectPredicate: pickerConfig.selectPredicate,
         shouldRevertGrid: pickerConfig.shouldRevertGrid,
@@ -127,6 +142,7 @@ class TestAssetPickerDelegate extends AssetPickerDelegate {
         textDelegate: pickerConfig.textDelegate,
         themeColor: pickerConfig.themeColor,
         locale: Localizations.maybeLocaleOf(context),
+        shouldAutoplayPreview: pickerConfig.shouldAutoplayPreview,
       ),
     );
     final List<AssetEntity>? result = await Navigator.of(
@@ -134,13 +150,16 @@ class TestAssetPickerDelegate extends AssetPickerDelegate {
       rootNavigator: useRootNavigator,
     ).push<List<AssetEntity>>(
       pageRouteBuilder?.call(picker) ??
-          AssetPickerPageRoute<List<AssetEntity>>(builder: (_) => picker),
+          AssetPickerPageRoute<List<AssetEntity>>(
+            builder: (_) => picker,
+            settings: pageRouteSettings,
+          ),
     );
     return result;
   }
 }
 
-const AssetEntity testAssetEntity = AssetEntity(
+final AssetEntity testAssetEntity = AssetEntity(
   id: 'test',
   typeInt: 0,
   width: 0,

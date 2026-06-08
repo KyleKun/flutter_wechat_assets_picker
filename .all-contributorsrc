@@ -211,7 +211,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/22376981?v=4",
       "profile": "https://www.legoffmael.fr",
       "contributions": [
-        "code"
+        "code",
+        "maintenance"
       ]
     },
     {
@@ -239,6 +240,62 @@
       "profile": "https://sqlturk.wordpress.com/",
       "contributions": [
         "translation"
+      ]
+    },
+    {
+      "login": "LIMMIHEE",
+      "name": "mirimhee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48482259?v=4",
+      "profile": "https://velog.io/@hee_mm_",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "AmosHuKe",
+      "name": "Amos",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32262985?v=4",
+      "profile": "https://amoshk.top",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "Dimilkalathiya",
+      "name": "Dimil Kalathiya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/102401667?v=4",
+      "profile": "https://github.com/Dimilkalathiya",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Gasol",
+      "name": "Gasol Wu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/108053?v=4",
+      "profile": "http://about.me/gasol",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "WeiJun0507",
+      "name": "Wei Jun",
+      "avatar_url": "https://avatars.githubusercontent.com/u/66726409?v=4",
+      "profile": "https://github.com/WeiJun0507",
+      "contributions": [
+        "business",
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "yujune",
+      "name": "JuNe",
+      "avatar_url": "https://avatars.githubusercontent.com/u/56582497?v=4",
+      "profile": "https://github.com/yujune",
+      "contributions": [
+        "code"
       ]
     }
   ],

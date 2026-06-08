@@ -14,39 +14,67 @@ that can be found in the LICENSE file. -->
 [![GitHub forks](https://img.shields.io/github/forks/fluttercandies/flutter_wechat_assets_picker?logo=github&style=flat-square)](https://github.com/fluttercandies/flutter_wechat_assets_picker/network)
 
 [![Awesome Flutter](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/Solido/awesome-flutter)
-<a target="_blank" href="https://jq.qq.com/?_wv=1027&k=5bcc0gy"><img border="0" src="https://pub.idqqimg.com/wpa/images/group.png" alt="FlutterCandies" title="FlutterCandies"></a>
+<a href="https://qm.qq.com/q/ZyJbSVjfSU"><img src="https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Ffluttercandies%2F.github%2Frefs%2Fheads%2Fmain%2Fdata.yml&query=%24.qq_group_number&label=QQ%E7%BE%A4&logo=qq&style=flat&color=1DACE8" /></a>
 
 Language: English | [中文](README-ZH.md)
 
-An image picker (also with videos and audios)
+An **image picker (also with videos and audios)**
 for Flutter projects based on the WeChat's UI.
-The package is using
-[photo_manager][photo_manager pub] for asset implementation,
-[extended_image][extended_image pub] for image preview,
-and [provider][provider pub] to help manage the state of the picker.
 
-Current WeChat version that UI based on: **8.3.x**
+Current WeChat version that UI based on: **8.0.51**
 UI designs will be updated following the WeChat update in anytime.
 
 To take a photo or a video for assets,
 please check the detailed usage in the example,
 and head over to [wechat_camera_picker][wechat_camera_picker pub].
-The package is a standalone extension that need to be used with combination.
+The package is a standalone extension that can to be used with combination.
 
 See the [Migration Guide][] to learn how to migrate between breaking changes.
+
+## Versions compatibility
+
+The package only guarantees to be working on **the stable version of Flutter**.
+We won't update it in real-time to align with other channels of Flutter.
+
+|         | 3.10 | 3.13 | 3.16 | 3.22 | 3.27 |
+|---------|:----:|:----:|:----:|:----:|:----:|
+| 10.0.0+ |  ❌   |  ❌   |  ❌   |  ❌   |  ✅   |
+| 9.5.0+  |  ❌   |  ❌   |  ❌   |  ✅   |  ✅   |
+| 8.9.0+  |  ❌   |  ❌   |  ✅   |  ❌   |  ❌   |
+| 8.7.0+  |  ❌   |  ✅   |  ❌   |  ❌   |  ❌   |
+| 8.5.0+  |  ✅   |  ❌   |  ❌   |  ❌   |  ❌   |
+
+If you got a `resolve conflict` error when running `flutter pub get`,
+please use `dependency_overrides` to fix it.
+
+## Package credits
+
+The package is built from these wonderful packages.
+
+| Name                                 | Features                                             |
+|:-------------------------------------|:-----------------------------------------------------|
+| [photo_manager][photo_manager pub]   | The basic abstractions and management for assets.    |
+| [extended_image][extended_image pub] | Preview assets with expected behaviors.              |
+| [provider][provider pub]             | Helps to manage the interaction state of the picker. |
+| [video_player][video_player pub]     | Plays videos and audios correspondingly.             |
+ 
+Their implementation should be relatively stable in the package.
+If you've found any issues related to them when using the picker,
+submit issues to our issue tracker first.
 
 <details>
   <summary>Table of content</summary>
 
 <!-- TOC -->
 * [Flutter WeChat Assets Picker](#flutter-wechat-assets-picker)
+  * [Versions compatibility](#versions-compatibility)
+  * [Package credits](#package-credits)
   * [Features ✨](#features-)
     * [Notes 📝](#notes-)
   * [Projects using this plugin 🖼️](#projects-using-this-plugin-)
   * [Screenshots 📸](#screenshots-)
   * [READ THIS FIRST ‼️](#read-this-first-)
   * [Preparing for use 🍭](#preparing-for-use-)
-    * [Versions compatibility](#versions-compatibility)
     * [Flutter](#flutter)
     * [Android](#android)
       * [Permissions](#permissions)
@@ -63,7 +91,8 @@ See the [Migration Guide][] to learn how to migrate between breaking changes.
         * [With `dio`](#with-dio)
     * [Custom pickers](#custom-pickers)
   * [Frequently asked question ❔](#frequently-asked-question-)
-    * [Execution failed for task ':photo_manager:compileDebugKotlin'](#execution-failed-for-task-photomanagercompiledebugkotlin)
+    * [Changing the default album name (`Recent` to others)](#changing-the-default-album-name-recent-to-others)
+    * [Execution failed for task ':photo_manager:compileDebugKotlin'](#execution-failed-for-task-photo_managercompiledebugkotlin)
     * [Create `AssetEntity` from `File` or `Uint8List` (rawData)](#create-assetentity-from-file-or-uint8list-rawdata)
     * [Glide warning 'Failed to find GeneratedAppGlideModule'](#glide-warning-failed-to-find-generatedappglidemodule)
   * [Contributors ✨](#contributors-)
@@ -107,11 +136,11 @@ See the [Migration Guide][] to learn how to migrate between breaking changes.
 
 ## Screenshots 📸
 
-| ![1](screenshots/README_1.webp)                          | ![2](screenshots/README_2.webp)                          | ![3](screenshots/README_3.webp)                          |
-|----------------------------------------------------------|----------------------------------------------------------|----------------------------------------------------------|
-| ![4](screenshots/README_4.webp)                          | ![5](screenshots/README_5.webp)                          | ![6](screenshots/README_6.webp)                          |
-| ![7](screenshots/README_7.webp)                          | ![8](screenshots/README_8.webp)                          | ![9](screenshots/README_9.webp)                          |
-| ![10](https://pic.alexv525.com/2021-07-05-picker_10.png) | ![10](https://pic.alexv525.com/2021-07-05-picker_11.png) | ![12](https://pic.alexv525.com/2021-07-05-picker_12.png) |
+| ![1](screenshots/README_1.webp)   | ![2](screenshots/README_2.webp)   | ![3](screenshots/README_3.webp)   |
+|-----------------------------------|-----------------------------------|-----------------------------------|
+| ![4](screenshots/README_4.webp)   | ![5](screenshots/README_5.webp)   | ![6](screenshots/README_6.webp)   |
+| ![7](screenshots/README_7.webp)   | ![8](screenshots/README_8.webp)   | ![9](screenshots/README_9.webp)   |
+| ![10](screenshots/README_10.webp) | ![11](screenshots/README_11.webp) | ![12](screenshots/README_12.webp) |
 
 ## READ THIS FIRST ‼️
 
@@ -134,22 +163,6 @@ Please walk through the [example](example) carefully
 before you have any questions.
 
 ## Preparing for use 🍭
-
-### Versions compatibility
-
-The package only guarantees to be working on **the stable version of Flutter**.
-We won't update it in real-time to align with other channels of Flutter.
-
-|        | 3.0 | 3.3 | 3.7 | 3.10 | **3.13** |
-|--------|:---:|:---:|:---:|:----:|:--------:|
-| 8.7.0+ |  ❌  |  ❌  |  ❌  |  ❌   |    ✅     |
-| 8.5.0+ |  ❌  |  ❌  |  ❌  |  ✅   |    ❌     |
-| 8.4.0+ |  ❌  |  ❌  |  ✅  |  ❌   |    ❌     |
-| 8.0.0+ |  ✅  |  ✅  |  ❌  |  ❌   |    ❌     |
-| 7.3.0+ |  ✅  |  ✅  |  ❌  |  ❌   |    ❌     |
-
-If you got a `resolve conflict` error when running `flutter pub get`,
-please use `dependency_overrides` to fix it.
 
 ### Flutter
 
@@ -179,14 +192,15 @@ Otherwise, no assets can be fetched on Android 13.
 
 #### Permissions
 
-| Name                     | Required | Declared | Max API Level | Others                       |
-|--------------------------|----------|----------|---------------|------------------------------|
-| `READ_EXTERNAL_STORAGE`  | YES      | YES      | 32            |                              |
-| `WRITE_EXTERNAL_STORAGE` | NO       | NO       | 29            |                              |
-| `ACCESS_MEDIA_LOCATION`  | YES*     | NO       | N/A           | Required when reading EXIF   |
-| `READ_MEDIA_IMAGES`      | YES*     | YES      | N/A           | Required when reading images | 
-| `READ_MEDIA_VIDEO`       | YES*     | YES      | N/A           | Required when reading videos | 
-| `READ_MEDIA_AUDIO`       | YES*     | YES      | N/A           | Required when reading audios | 
+| Name                              | Required | Declared | Max API Level | Others                              |
+|-----------------------------------|----------|----------|---------------|-------------------------------------|
+| `READ_EXTERNAL_STORAGE`           | YES      | YES      | 32            |                                     |
+| `WRITE_EXTERNAL_STORAGE`          | NO       | NO       | 29            |                                     |
+| `ACCESS_MEDIA_LOCATION`           | YES*     | NO       | N/A           | Required when reading EXIF          |
+| `READ_MEDIA_IMAGES`               | YES*     | YES      | N/A           | Required when reading images        | 
+| `READ_MEDIA_VIDEO`                | YES*     | YES      | N/A           | Required when reading videos        | 
+| `READ_MEDIA_AUDIO`                | YES*     | YES      | N/A           | Required when reading audios        | 
+| `READ_MEDIA_VISUAL_USER_SELECTED` | YES*     | YES      | 34            | Required when reading user selected |
 
 If you're targeting Android SDK 33+,
 and you don't need to load photos, videos or audios,
@@ -199,6 +213,8 @@ consider declare only relevant permission in your apps, more specifically:
     <!--Requesting access to images and videos.-->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!--Requesting access to limited images by user selection when prompting permission.-->
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <!--When your app has no need to access audio, remove it or comment it out.-->
     <!--<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />-->
 </manifest>
@@ -211,13 +227,9 @@ consider declare only relevant permission in your apps, more specifically:
    ```Podfile
    platform :ios, '11.0'
    ```
+   Remove the `#` heading if the line starts with it.
 2. Add the following content to `Info.plist`.
 ```
-<key>NSAppTransportSecurity</key>
-<dict>
-	<key>NSAllowsArbitraryLoads</key>
-	<true/>
-</dict>
 <key>NSPhotoLibraryUsageDescription</key>
 <string>Replace with your permission description.</string>
 ```
@@ -229,6 +241,7 @@ consider declare only relevant permission in your apps, more specifically:
    ```ruby
    platform :osx, '10.15'
    ```
+   Remove the `#` heading if the line starts with it.
 2. Set the minimum deployment target of the macOS to *10.15*.
    Use XCode to open `macos/Runner.xcworkspace` .
 3. Follow the [iOS](#iOS) instructions and modify `Info.plist` accordingly.
@@ -275,39 +288,39 @@ final List<AssetEntity>? result = await AssetPicker.pickAssets(
 
 Fields in `AssetPickerConfig`:
 
-| Name                              | Type                                 | Description                                                                                  | Default                     |
-|-----------------------------------|--------------------------------------|----------------------------------------------------------------------------------------------|-----------------------------|
-| selectedAssets                    | `List<AssetEntity>?`                 | Selected assets. Prevent duplicate selection.                                                | `null`                      |
-| maxAssets                         | `int`                                | Maximum asset that the picker can pick.                                                      | 9                           |
-| pageSize                          | `int?`                               | Number of assets per page. **Must be a multiple of `gridCount`**.                            | 80                          |
-| gridThumbnailSize                 | `ThumbnailSize`                      | Thumbnail size for the grid's item.                                                          | `ThumbnailSize.square(200)` |
-| pathThumbnailSize                 | `ThumbnailSize`                      | Thumbnail size for the path selector.                                                        | `ThumbnailSize.square(80)`  |
-| previewThumbnailSize              | `ThumbnailSize?`                     | Preview thumbnail size in the viewer.                                                        | `null`                      |
-| requestType                       | `RequestType`                        | Request type for picker.                                                                     | `RequestType.common`        |
-| specialPickerType                 | `SpecialPickerType?`                 | Provides the option to integrate a custom picker type.                                       | `null`                      |
-| keepScrollOffset                  | `bool`                               | Whether the picker should save the scroll offset between pushes and pops.                    | `null`                      |
-| sortPathDelegate                  | `SortPathDelegate<AssetPathEntity>?` | Path entities sort delegate for the picker, sort paths as you want.                          | `CommonSortPathDelegate`    |
-| sortPathsByModifiedDate           | `bool`                               | Whether to allow sort delegates to sort paths with `FilterOptionGroup.containsPathModified`. | `false`                     |
-| filterOptions                     | `PMFilter?`                          | Allow users to customize assets filter options.                                              | `null`                      |
-| gridCount                         | `int`                                | Grid count in picker.                                                                        | 4                           |
-| themeColor                        | `Color?`                             | Main theme color for the picker.                                                             | `Color(0xff00bc56)`         |
-| pickerTheme                       | `ThemeData?`                         | Theme data provider for the picker and the viewer.                                           | `null`                      |
-| textDelegate                      | `AssetPickerTextDelegate?`           | Text delegate for the picker, for customize the texts.                                       | `AssetPickerTextDelegate()` |
-| specialItemPosition               | `SpecialItemPosition`                | Allow users set a special item in the picker with several positions.                         | `SpecialItemPosition.none`  |
-| specialItemBuilder                | `SpecialItemBuilder?`                | The widget builder for the special item.                                                     | `null`                      |
-| loadingIndicatorBuilder           | `IndicatorBuilder?`                  | Indicates the loading status for the builder.                                                | `null`                      |
-| selectPredicate                   | `AssetSelectPredicate`               | Predicate whether an asset can be selected or unselected.                                    | `null`                      |
-| shouldRevertGrid                  | `bool?`                              | Whether the assets grid should revert.                                                       | `null`                      |
-| limitedPermissionOverlayPredicate | `LimitedPermissionOverlayPredicate?` | Predicate whether the limited permission overlay should be displayed.                        | `null`                      |
-| pathNameBuilder                   | `PathNameBuilder<AssetPathEntity>?`  | Build customized path (album) name with the given path entity.                               | `null`                      |
+| Name                              | Type                                             | Description                                                                                    | Default                     |
+|-----------------------------------|--------------------------------------------------|------------------------------------------------------------------------------------------------|-----------------------------|
+| selectedAssets                    | `List<AssetEntity>?`                             | Selected assets. Prevent duplicate selection.                                                  | `null`                      |
+| maxAssets                         | `int`                                            | Maximum asset that the picker can pick.                                                        | 9                           |
+| pageSize                          | `int?`                                           | Number of assets per page. **Must be a multiple of `gridCount`**.                              | 80                          |
+| gridThumbnailSize                 | `ThumbnailSize`                                  | Thumbnail size for the grid's item.                                                            | `ThumbnailSize.square(200)` |
+| pathThumbnailSize                 | `ThumbnailSize`                                  | Thumbnail size for the path selector.                                                          | `ThumbnailSize.square(80)`  |
+| previewThumbnailSize              | `ThumbnailSize?`                                 | Preview thumbnail size in the viewer.                                                          | `null`                      |
+| requestType                       | `RequestType`                                    | Request type for picker.                                                                       | `RequestType.common`        |
+| specialPickerType                 | `SpecialPickerType?`                             | Provides the option to integrate a custom picker type.                                         | `null`                      |
+| keepScrollOffset                  | `bool`                                           | Whether the picker should save the scroll offset between pushes and pops.                      | `null`                      |
+| sortPathDelegate                  | `SortPathDelegate<AssetPathEntity>?`             | Path entities sort delegate for the picker, sort paths as you want.                            | `CommonSortPathDelegate`    |
+| sortPathsByModifiedDate           | `bool`                                           | Whether to allow sort delegates to sort paths with `FilterOptionGroup.containsPathModified`.   | `false`                     |
+| filterOptions                     | `PMFilter?`                                      | Allow users to customize assets filter options.                                                | `null`                      |
+| gridCount                         | `int`                                            | Grid count in picker.                                                                          | 4                           |
+| themeColor                        | `Color?`                                         | Main theme color for the picker.                                                               | `Color(0xff00bc56)`         |
+| pickerTheme                       | `ThemeData?`                                     | Theme data provider for the picker and the viewer.                                             | `null`                      |
+| textDelegate                      | `AssetPickerTextDelegate?`                       | Text delegate for the picker, for customize the texts.                                         | `AssetPickerTextDelegate()` |
+| specialItems                      | `List<SpecialItem>`                              | List of special items.                                                                         | `const <SpecialItem>[]`     |
+| loadingIndicatorBuilder           | `IndicatorBuilder?`                              | Indicates the loading status for the builder.                                                  | `null`                      |
+| selectPredicate                   | `AssetSelectPredicate`                           | Predicate whether an asset can be selected or unselected.                                      | `null`                      |
+| shouldRevertGrid                  | `bool?`                                          | Whether the assets grid should revert.                                                         | `null`                      |
+| limitedPermissionOverlayPredicate | `LimitedPermissionOverlayPredicate?`             | Predicate whether the limited permission overlay should be displayed.                          | `null`                      |
+| pathNameBuilder                   | `PathNameBuilder<AssetPathEntity>?`              | Build customized path (album) name with the given path entity.                                 | `null`                      |
+| assetsChangeCallback              | `AssetsChangeCallback<AssetPathEntity>?`         | The callback that will be called when the system notifies assets changes.                      | `null`                      |
+| assetsChangeRefreshPredicate      | `AssetsChangeRefreshPredicate<AssetPathEntity>?` | Whether assets changing should call refresh with the given call and the current selected path. | `null`                      |
+| shouldAutoPlayPreview             | `bool`                                           | Whether the preview should auto play.                                                          | `false`                     |
+| dragToSelect                      | `bool`                                           | Whether assets selection can be done with drag gestures.                                       | `true`                      |
+| enableLivePhoto                   | `bool`                                           | Whether to enable Live-Photo functionality in the picker.                                      | `true`                      |
 
 - When `maxAssets` equals to `1` (a.k.a. single picking mode),
   use `SpecialPickerType.noPreview` will immediately select asset
   clicked (pressed) by the user and popped.
-- When `requestType` equals to `RequestType.video`,
-  the picker will obtain *Live Photos* on iOS by default.
-  You can disable it by setting `FilterOptionGroup.containsLivePhotos`
-  to `false`.
 - `limitedPermissionOverlayPredicate` lives without persistence,
   if you want to ignore the limited preview after restart,
   you'll need to integrate with your own saving methods.
@@ -459,6 +472,26 @@ See [Contribute custom implementations][] for more details.
 
 ## Frequently asked question ❔
 
+### Changing the default album name (`Recent` to others)
+
+`Recent` is the fix album name for the ALL assets on Android
+since the all assets' album is not an actual album, it only represents all media data records.
+
+To solve that on Android, use `pathNameBuilder`, for example:
+```dart
+AssetPickerConfig(
+  pathNameBuilder: (AssetPathEntity path) => switch (path) {
+    final p when p.isAll => '最近',
+    // You can apply similar conditions to other common paths.
+    _ => path.name,
+  },
+)
+```
+
+Other albums or albums on other platforms (iOS/macOS) will follow
+the configured system localization and supported localizations.
+`pathNameBuilder` is available for all albums.
+
 ### Execution failed for task ':photo_manager:compileDebugKotlin'
 
 See [photo_manager#561][] for more details.
@@ -546,12 +579,20 @@ Many thanks to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/taqiabdulaziz"><img src="https://avatars.githubusercontent.com/u/30410316?v=4?s=50" width="50px;" alt="Muhammad Taqi Abdul Aziz"/><br /><sub><b>Muhammad Taqi Abdul Aziz</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/commits?author=taqiabdulaziz" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/hellohejinyu"><img src="https://avatars.githubusercontent.com/u/8766034?v=4?s=50" width="50px;" alt="何锦余"/><br /><sub><b>何锦余</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/issues?q=author%3Ahellohejinyu" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/leonpesdk"><img src="https://avatars.githubusercontent.com/u/57394644?v=4?s=50" width="50px;" alt="Leon Dudlik"/><br /><sub><b>Leon Dudlik</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/issues?q=author%3Aleonpesdk" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://www.legoffmael.fr"><img src="https://avatars.githubusercontent.com/u/22376981?v=4?s=50" width="50px;" alt="Maël"/><br /><sub><b>Maël</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/commits?author=LeGoffMael" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.legoffmael.fr"><img src="https://avatars.githubusercontent.com/u/22376981?v=4?s=50" width="50px;" alt="Maël"/><br /><sub><b>Maël</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/commits?author=LeGoffMael" title="Code">💻</a> <a href="#maintenance-LeGoffMael" title="Maintenance">🚧</a></td>
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/dddrop"><img src="https://avatars.githubusercontent.com/u/5361175?v=4?s=50" width="50px;" alt="dddrop"/><br /><sub><b>dddrop</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/commits?author=dddrop" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/loinp"><img src="https://avatars.githubusercontent.com/u/34020090?v=4?s=50" width="50px;" alt="Nguyen Phuc Loi"/><br /><sub><b>Nguyen Phuc Loi</b></sub></a><br /><a href="#translation-nploi" title="Translation">🌍</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://sqlturk.wordpress.com/"><img src="https://avatars.githubusercontent.com/u/12383547?v=4?s=50" width="50px;" alt="Cevheri"/><br /><sub><b>Cevheri</b></sub></a><br /><a href="#translation-cevheri" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://velog.io/@hee_mm_"><img src="https://avatars.githubusercontent.com/u/48482259?v=4?s=50" width="50px;" alt="mirimhee"/><br /><sub><b>mirimhee</b></sub></a><br /><a href="#translation-LIMMIHEE" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://amoshk.top"><img src="https://avatars.githubusercontent.com/u/32262985?v=4?s=50" width="50px;" alt="Amos"/><br /><sub><b>Amos</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/issues?q=author%3AAmosHuKe" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Dimilkalathiya"><img src="https://avatars.githubusercontent.com/u/102401667?v=4?s=50" width="50px;" alt="Dimil Kalathiya"/><br /><sub><b>Dimil Kalathiya</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/commits?author=Dimilkalathiya" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://about.me/gasol"><img src="https://avatars.githubusercontent.com/u/108053?v=4?s=50" width="50px;" alt="Gasol Wu"/><br /><sub><b>Gasol Wu</b></sub></a><br /><a href="#translation-Gasol" title="Translation">🌍</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/WeiJun0507"><img src="https://avatars.githubusercontent.com/u/66726409?v=4?s=50" width="50px;" alt="Wei Jun"/><br /><sub><b>Wei Jun</b></sub></a><br /><a href="#business-WeiJun0507" title="Business development">💼</a> <a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/commits?author=WeiJun0507" title="Code">💻</a> <a href="#ideas-WeiJun0507" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/yujune"><img src="https://avatars.githubusercontent.com/u/56582497?v=4?s=50" width="50px;" alt="JuNe"/><br /><sub><b>JuNe</b></sub></a><br /><a href="https://github.com/fluttercandies/flutter_wechat_assets_picker/commits?author=yujune" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
@@ -579,6 +620,7 @@ such as [IntelliJ IDEA](https://www.jetbrains.com/idea/?from=fluttercandies).
 [photo_manager pub]: https://pub.dev/packages/photo_manager
 [extended_image pub]: https://pub.dev/packages/extended_image
 [provider pub]: https://pub.dev/packages/provider
+[video_player pub]: https://pub.dev/packages/video_player
 [wechat_camera_picker pub]: https://pub.dev/packages/wechat_camera_picker
 [Migration Guide]: https://github.com/fluttercandies/flutter_wechat_assets_picker/blob/main/guides/migration_guide.md
 [photo_manager's API docs]: https://pub.dev/documentation/photo_manager/latest/

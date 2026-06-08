@@ -7,12 +7,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wechat_picker_library/wechat_picker_library.dart';
 
 import '../../constants/constants.dart';
 import '../../delegates/asset_picker_viewer_builder_delegate.dart';
-import '../../internal/singleton.dart';
-import '../scale_text.dart';
-import 'locally_available_builder.dart';
+import '../../internals/singleton.dart';
+import '../../provider/asset_picker_viewer_provider.dart';
 
 class VideoPageBuilder extends StatefulWidget {
   const VideoPageBuilder({
@@ -20,17 +20,23 @@ class VideoPageBuilder extends StatefulWidget {
     required this.asset,
     required this.delegate,
     this.hasOnlyOneVideoAndMoment = false,
+    this.shouldAutoplayPreview = false,
   });
 
   /// Asset currently displayed.
   /// 展示的资源
   final AssetEntity asset;
 
-  final AssetPickerViewerBuilderDelegate<AssetEntity, AssetPathEntity> delegate;
+  final AssetPickerViewerBuilderDelegate<AssetEntity, AssetPathEntity,
+      AssetPickerViewerProvider<AssetEntity>> delegate;
 
   /// Only previewing one video and with the [SpecialPickerType.wechatMoment].
   /// 是否处于 [SpecialPickerType.wechatMoment] 且只有一个视频
   final bool hasOnlyOneVideoAndMoment;
+
+  /// Whether the preview should auto play.
+  /// 预览是否自动播放
+  final bool shouldAutoplayPreview;
 
   @override
   State<VideoPageBuilder> createState() => _VideoPageBuilderState();
@@ -86,6 +92,7 @@ class _VideoPageBuilderState extends State<VideoPageBuilder> {
       ?..removeListener(videoPlayerListener)
       ..pause()
       ..dispose();
+    isPlaying.dispose();
     super.dispose();
   }
 
@@ -97,9 +104,7 @@ class _VideoPageBuilderState extends State<VideoPageBuilder> {
     final String? url = await widget.asset.getMediaUrl();
     if (url == null) {
       hasErrorWhenInitializing = true;
-      if (mounted) {
-        setState(() {});
-      }
+      safeSetState(() {});
       return;
     }
     final Uri uri = Uri.parse(url);
@@ -114,7 +119,7 @@ class _VideoPageBuilderState extends State<VideoPageBuilder> {
       controller
         ..addListener(videoPlayerListener)
         ..setLooping(widget.hasOnlyOneVideoAndMoment);
-      if (widget.hasOnlyOneVideoAndMoment) {
+      if (widget.hasOnlyOneVideoAndMoment || widget.shouldAutoplayPreview) {
         controller.play();
       }
     } catch (e, s) {
@@ -128,9 +133,7 @@ class _VideoPageBuilderState extends State<VideoPageBuilder> {
       );
       hasErrorWhenInitializing = true;
     } finally {
-      if (mounted) {
-        setState(() {});
-      }
+      safeSetState(() {});
     }
   }
 
@@ -184,14 +187,18 @@ class _VideoPageBuilderState extends State<VideoPageBuilder> {
             builder: (_, bool value, __) => GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: value || MediaQuery.accessibleNavigationOf(context)
-                  ? () => playButtonCallback(context)
+                  ? () {
+                      playButtonCallback(context);
+                    }
                   : widget.delegate.switchDisplayingDetail,
               child: Center(
                 child: AnimatedOpacity(
                   duration: kThemeAnimationDuration,
                   opacity: value ? 0.0 : 1.0,
                   child: GestureDetector(
-                    onTap: () => playButtonCallback(context),
+                    onTap: () {
+                      playButtonCallback(context);
+                    },
                     child: DecoratedBox(
                       decoration: const BoxDecoration(
                         boxShadow: <BoxShadow>[
@@ -221,6 +228,7 @@ class _VideoPageBuilderState extends State<VideoPageBuilder> {
     return LocallyAvailableBuilder(
       key: ValueKey<String>(widget.asset.id),
       asset: widget.asset,
+      isOriginal: false,
       builder: (BuildContext context, AssetEntity asset) {
         if (hasErrorWhenInitializing) {
           return Center(
@@ -238,7 +246,9 @@ class _VideoPageBuilderState extends State<VideoPageBuilder> {
           return const SizedBox.shrink();
         }
         return Semantics(
-          onLongPress: () => playButtonCallback(context),
+          onLongPress: () {
+            playButtonCallback(context);
+          },
           onLongPressHint:
               Singleton.textDelegate.semanticsTextDelegate.sActionPlayHint,
           child: _contentBuilder(context),
