@@ -131,7 +131,9 @@ class _InstaAssetPickerState extends State<InstaAssetPicker> {
                   ),
                   if (entities.isNotEmpty)
                     Icon(
-                      isDisplayingDetail ? Icons.arrow_downward : Icons.arrow_upward,
+                      isDisplayingDetail
+                          ? Icons.arrow_downward
+                          : Icons.arrow_upward,
                       size: 18.0,
                     ),
                 ],
@@ -305,7 +307,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
   double? _scrollTargetOffset;
 
   final ValueNotifier<double> _viewerPosition = ValueNotifier<double>(0);
-  final ValueNotifier<AssetEntity?> _previewAsset = ValueNotifier<AssetEntity?>(null);
+  final ValueNotifier<AssetEntity?> _previewAsset =
+      ValueNotifier<AssetEntity?>(null);
 
   @override
   void dispose() {
@@ -327,7 +330,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
   double indexPosition(BuildContext context, int index) {
     final int row = (index / gridCount).floor();
     final double size =
-        (MediaQuery.sizeOf(context).width - itemSpacing * (gridCount - 1)) / gridCount;
+        (MediaQuery.sizeOf(context).width - itemSpacing * (gridCount - 1)) /
+            gridCount;
     return row * size + (row * itemSpacing);
   }
 
@@ -380,10 +384,12 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
       return;
     }
     // if is preview asset, unselect it
-    if (provider.selectedAssets.isNotEmpty && _previewAsset.value == currentAsset) {
+    if (provider.selectedAssets.isNotEmpty &&
+        _previewAsset.value == currentAsset) {
       selectAsset(context, currentAsset, index, true);
-      _previewAsset.value =
-          provider.selectedAssets.isEmpty ? currentAsset : provider.selectedAssets.last;
+      _previewAsset.value = provider.selectedAssets.isEmpty
+          ? currentAsset
+          : provider.selectedAssets.last;
       return;
     }
 
@@ -406,7 +412,9 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
     final List<AssetEntity> selectedAssets = provider.selectedAssets;
     if (prevCount < selectedAssets.length) {
       _previewAsset.value = asset;
-    } else if (selected && asset == _previewAsset.value && selectedAssets.isNotEmpty) {
+    } else if (selected &&
+        asset == _previewAsset.value &&
+        selectedAssets.isNotEmpty) {
       _previewAsset.value = selectedAssets.last;
     }
 
@@ -420,10 +428,11 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
     double position,
     double reducedPosition,
   ) {
-    final bool isScrollUp =
-        gridScrollController.position.userScrollDirection == ScrollDirection.reverse;
+    final bool isScrollUp = gridScrollController.position.userScrollDirection ==
+        ScrollDirection.reverse;
     final bool isScrollDown =
-        gridScrollController.position.userScrollDirection == ScrollDirection.forward;
+        gridScrollController.position.userScrollDirection ==
+            ScrollDirection.forward;
 
     if (notification is ScrollEndNotification) {
       _lastEndScrollOffset = gridScrollController.offset;
@@ -435,21 +444,26 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
     }
 
     // expand viewer
-    if (isScrollDown && gridScrollController.offset < 0 && position < _kExtendedViewerPosition) {
+    if (isScrollDown &&
+        gridScrollController.offset < 0 &&
+        position < _kExtendedViewerPosition) {
       // if scroll at edge, compute position based on scroll
       if (_lastScrollOffset > gridScrollController.offset) {
-        _viewerPosition.value -= (_lastScrollOffset.abs() - gridScrollController.offset.abs()) * 6;
+        _viewerPosition.value -=
+            (_lastScrollOffset.abs() - gridScrollController.offset.abs()) * 6;
       } else {
         // otherwise just expand it
         _expandViewer();
       }
     } else if (isScrollUp &&
-        (gridScrollController.offset - _lastEndScrollOffset) * _kScrollMultiplier >
+        (gridScrollController.offset - _lastEndScrollOffset) *
+                _kScrollMultiplier >
             previewHeight(context) - position &&
         position > reducedPosition) {
       // reduce viewer
       _viewerPosition.value = previewHeight(context) -
-          (gridScrollController.offset - _lastEndScrollOffset) * _kScrollMultiplier;
+          (gridScrollController.offset - _lastEndScrollOffset) *
+              _kScrollMultiplier;
     }
 
     _lastScrollOffset = gridScrollController.offset;
@@ -468,7 +482,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
       },
       child: ValueListenableBuilder<AssetEntity?>(
         valueListenable: _previewAsset,
-        builder: (BuildContext context, AssetEntity? previewAsset, __) => SizedBox(
+        builder: (BuildContext context, AssetEntity? previewAsset, __) =>
+            SizedBox(
           width: MediaQuery.sizeOf(context).width,
           height: previewHeight(context),
           child: Selector<DefaultAssetPickerProvider, List<AssetEntity>>(
@@ -478,7 +493,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                 return loadingIndicator(context);
               }
 
-              int effectiveIndex = selected.isEmpty ? 0 : selected.indexOf(selected.last);
+              int effectiveIndex =
+                  selected.isEmpty ? 0 : selected.indexOf(selected.last);
               if (previewAsset != null) {
                 effectiveIndex = selected.indexOf(previewAsset);
               }
@@ -496,7 +512,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                   selectorProvider: provider,
                   selectPredicate: selectPredicate,
                   selectedAssets: assets,
-                  onPreviewChanged: (int index) => _previewAsset.value = assets[index],
+                  onPreviewChanged: (int index) =>
+                      _previewAsset.value = assets[index],
                 ),
               );
             },
@@ -534,16 +551,19 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
           // the top position when the viewer is reduced
           final double topReducedPosition =
               -(previewHeight(context) - _kReducedViewerHeight + appBarHeight);
-          position = position.clamp(topReducedPosition, _kExtendedViewerPosition);
+          position =
+              position.clamp(topReducedPosition, _kExtendedViewerPosition);
           // opacity is calculated based on the position of the viewer
-          final double opacity = ((position / -topReducedPosition) + 1).clamp(0.4, 1.0);
-          final Duration animationDuration =
-              position == topReducedPosition || position == _kExtendedViewerPosition
-                  ? const Duration(milliseconds: 250)
-                  : Duration.zero;
+          final double opacity =
+              ((position / -topReducedPosition) + 1).clamp(0.4, 1.0);
+          final Duration animationDuration = position == topReducedPosition ||
+                  position == _kExtendedViewerPosition
+              ? const Duration(milliseconds: 250)
+              : Duration.zero;
 
-          double gridHeight =
-              MediaQuery.sizeOf(context).height - appBarHeight - _kReducedViewerHeight;
+          double gridHeight = MediaQuery.sizeOf(context).height -
+              appBarHeight -
+              _kReducedViewerHeight;
           // when not assets are displayed, compute the exact height to show the loader
           if (!provider.hasAssetsToDisplay) {
             gridHeight -= previewHeight(context) - -_viewerPosition.value;
@@ -563,7 +583,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                   height: gridHeight,
                   width: MediaQuery.sizeOf(context).width,
                   child: NotificationListener<ScrollNotification>(
-                    onNotification: (ScrollNotification notification) => _handleScroll(
+                    onNotification: (ScrollNotification notification) =>
+                        _handleScroll(
                       context,
                       notification,
                       position,
@@ -638,7 +659,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
             offset: isSwitchingPath
                 ? Offset(
                     0,
-                    appBarPreferredSize!.height + MediaQuery.paddingOf(context).top,
+                    appBarPreferredSize!.height +
+                        MediaQuery.paddingOf(context).top,
                   )
                 : Offset.zero,
             child: Stack(
@@ -697,26 +719,33 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         border: Border.all(color: theme.unselectedWidgetColor),
-        color: isSelected ? themeColor : theme.unselectedWidgetColor.withOpacity(.2),
+        color: isSelected
+            ? themeColor
+            : theme.unselectedWidgetColor.withOpacity(.2),
         shape: BoxShape.circle,
       ),
       child: FittedBox(
         child: AnimatedSwitcher(
           duration: duration,
           reverseDuration: duration,
-          child: isSelected ? Text((indexSelected + 1).toString()) : const SizedBox.shrink(),
+          child: isSelected
+              ? Text((indexSelected + 1).toString())
+              : const SizedBox.shrink(),
         ),
       ),
     );
 
     return ValueListenableBuilder<AssetEntity?>(
       valueListenable: _previewAsset,
-      builder: (BuildContext context, AssetEntity? previewAsset, Widget? child) {
+      builder:
+          (BuildContext context, AssetEntity? previewAsset, Widget? child) {
         final bool isPreview = asset == _previewAsset.value;
 
         return Positioned.fill(
           child: GestureDetector(
-            onTap: isPreviewEnabled ? () => viewAsset(context, index, asset) : null,
+            onTap: isPreviewEnabled
+                ? () => viewAsset(context, index, asset)
+                : null,
             child: AnimatedContainer(
               duration: switchingPathDuration,
               padding: const EdgeInsets.all(4),
@@ -728,7 +757,8 @@ final class InstaAssetPickerBuilder extends DefaultAssetPickerBuilderDelegate {
                 child: isSelected && !isSingleAssetMode
                     ? GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => selectAsset(context, asset, index, isSelected),
+                        onTap: () =>
+                            selectAsset(context, asset, index, isSelected),
                         child: innerSelector,
                       )
                     : innerSelector,
@@ -765,7 +795,8 @@ final class InstaAssetPickerViewerBuilder
   Widget _pageViewBuilder(BuildContext context) {
     // update pageController to display `currentIndex`
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (pageController.hasClients && !pageController.position.isScrollingNotifier.value) {
+      if (pageController.hasClients &&
+          !pageController.position.isScrollingNotifier.value) {
         pageController.jumpToPage(currentIndex);
       }
     });
