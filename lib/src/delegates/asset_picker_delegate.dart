@@ -2,12 +2,14 @@
 // Use of this source code is governed by an Apache license that can be found
 // in the LICENSE file.
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart' hide Path;
+import 'package:flutter/services.dart' show MethodCall;
 import 'package:photo_manager/photo_manager.dart';
+import 'package:wechat_picker_library/wechat_picker_library.dart'
+    show buildTheme;
 
 import '../constants/config.dart';
-import '../constants/constants.dart';
+import '../constants/constants.dart' show packageName;
 import '../provider/asset_picker_provider.dart';
 import '../widget/asset_picker.dart';
 import '../widget/asset_picker_page_route.dart';
@@ -29,8 +31,12 @@ class AssetPickerDelegate {
   /// See also:
   ///  * [PermissionState] which defined all states of required permissions.
   /// {@endtemplate}
-  Future<PermissionState> permissionCheck() async {
-    final PermissionState ps = await PhotoManager.requestPermissionExtend();
+  Future<PermissionState> permissionCheck({
+    PermissionRequestOption requestOption = const PermissionRequestOption(),
+  }) async {
+    final PermissionState ps = await PhotoManager.requestPermissionExtend(
+      requestOption: requestOption,
+    );
     if (ps != PermissionState.authorized && ps != PermissionState.limited) {
       throw StateError('Permission state error with $ps.');
     }
@@ -61,14 +67,25 @@ class AssetPickerDelegate {
     BuildContext context, {
     Key? key,
     AssetPickerConfig pickerConfig = const AssetPickerConfig(),
+    PermissionRequestOption? permissionRequestOption,
     bool useRootNavigator = true,
+    RouteSettings? pageRouteSettings,
     AssetPickerPageRouteBuilder<List<AssetEntity>>? pageRouteBuilder,
   }) async {
-    final PermissionState ps = await permissionCheck();
+    permissionRequestOption ??= PermissionRequestOption(
+      androidPermission: AndroidPermission(
+        type: pickerConfig.requestType,
+        mediaLocation: false,
+      ),
+    );
+    final PermissionState ps = await permissionCheck(
+      requestOption: permissionRequestOption,
+    );
     final AssetPickerPageRoute<List<AssetEntity>> route =
         pageRouteBuilder?.call(const SizedBox.shrink()) ??
             AssetPickerPageRoute<List<AssetEntity>>(
               builder: (_) => const SizedBox.shrink(),
+              settings: pageRouteSettings,
             );
     final DefaultAssetPickerProvider provider = DefaultAssetPickerProvider(
       maxAssets: pickerConfig.maxAssets,
@@ -80,8 +97,10 @@ class AssetPickerDelegate {
       filterOptions: pickerConfig.filterOptions,
       initializeDelayDuration: route.transitionDuration,
     );
-    final Widget picker = AssetPicker<AssetEntity, AssetPathEntity>(
+    final picker = AssetPicker<AssetEntity, AssetPathEntity,
+        DefaultAssetPickerBuilderDelegate>(
       key: key,
+      permissionRequestOption: permissionRequestOption,
       builder: DefaultAssetPickerBuilderDelegate(
         provider: provider,
         initialPermission: ps,
@@ -90,25 +109,32 @@ class AssetPickerDelegate {
         gridThumbnailSize: pickerConfig.gridThumbnailSize,
         previewThumbnailSize: pickerConfig.previewThumbnailSize,
         specialPickerType: pickerConfig.specialPickerType,
-        specialItemPosition: pickerConfig.specialItemPosition,
-        specialItemBuilder: pickerConfig.specialItemBuilder,
+        specialItems: pickerConfig.specialItems,
         loadingIndicatorBuilder: pickerConfig.loadingIndicatorBuilder,
         selectPredicate: pickerConfig.selectPredicate,
         shouldRevertGrid: pickerConfig.shouldRevertGrid,
         limitedPermissionOverlayPredicate:
             pickerConfig.limitedPermissionOverlayPredicate,
         pathNameBuilder: pickerConfig.pathNameBuilder,
+        assetsChangeCallback: pickerConfig.assetsChangeCallback,
+        assetsChangeRefreshPredicate: pickerConfig.assetsChangeRefreshPredicate,
         textDelegate: pickerConfig.textDelegate,
         themeColor: pickerConfig.themeColor,
         locale: Localizations.maybeLocaleOf(context),
+        shouldAutoplayPreview: pickerConfig.shouldAutoplayPreview,
+        dragToSelect: pickerConfig.dragToSelect,
+        enableLivePhoto: pickerConfig.enableLivePhoto,
       ),
     );
-    final List<AssetEntity>? result = await Navigator.of(
+    final List<AssetEntity>? result = await Navigator.maybeOf(
       context,
       rootNavigator: useRootNavigator,
-    ).push<List<AssetEntity>>(
+    )?.push<List<AssetEntity>>(
       pageRouteBuilder?.call(picker) ??
-          AssetPickerPageRoute<List<AssetEntity>>(builder: (_) => picker),
+          AssetPickerPageRoute<List<AssetEntity>>(
+            builder: (_) => picker,
+            settings: pageRouteSettings,
+          ),
     );
     return result;
   }
@@ -130,25 +156,35 @@ class AssetPickerDelegate {
   ///  * [AssetPickerBuilderDelegate] for how to customize/override widgets
   ///    during the picking process.
   /// {@endtemplate}
-  Future<List<Asset>?> pickAssetsWithDelegate<Asset, Path,
-      PickerProvider extends AssetPickerProvider<Asset, Path>>(
+  Future<List<Asset>?> pickAssetsWithDelegate<
+      Asset,
+      Path,
+      PickerProvider extends AssetPickerProvider<Asset, Path>,
+      Delegate extends AssetPickerBuilderDelegate<Asset, Path>>(
     BuildContext context, {
-    required AssetPickerBuilderDelegate<Asset, Path> delegate,
+    required Delegate delegate,
+    PermissionRequestOption permissionRequestOption =
+        const PermissionRequestOption(),
     Key? key,
     bool useRootNavigator = true,
+    RouteSettings? pageRouteSettings,
     AssetPickerPageRouteBuilder<List<Asset>>? pageRouteBuilder,
   }) async {
-    await permissionCheck();
-    final Widget picker = AssetPicker<Asset, Path>(
+    await permissionCheck(requestOption: permissionRequestOption);
+    final picker = AssetPicker<Asset, Path, Delegate>(
       key: key,
+      permissionRequestOption: permissionRequestOption,
       builder: delegate,
     );
-    final List<Asset>? result = await Navigator.of(
+    final result = await Navigator.maybeOf(
       context,
       rootNavigator: useRootNavigator,
-    ).push<List<Asset>>(
+    )?.push(
       pageRouteBuilder?.call(picker) ??
-          AssetPickerPageRoute<List<Asset>>(builder: (_) => picker),
+          AssetPickerPageRoute<List<Asset>>(
+            builder: (_) => picker,
+            settings: pageRouteSettings,
+          ),
     );
     return result;
   }
@@ -212,80 +248,6 @@ class AssetPickerDelegate {
   /// 设置 [light] 为 true 时可以获取浅色版本的主题。
   /// {@endtemplate}
   ThemeData themeData(Color? themeColor, {bool light = false}) {
-    themeColor ??= defaultThemeColorWeChat;
-    if (light) {
-      return ThemeData.light().copyWith(
-        primaryColor: Colors.grey[50],
-        primaryColorLight: Colors.grey[50],
-        primaryColorDark: Colors.grey[50],
-        canvasColor: Colors.grey[100],
-        scaffoldBackgroundColor: Colors.grey[50],
-        cardColor: Colors.grey[50],
-        highlightColor: Colors.transparent,
-        textSelectionTheme: TextSelectionThemeData(
-          cursorColor: themeColor,
-          selectionColor: themeColor.withAlpha(100),
-          selectionHandleColor: themeColor,
-        ),
-        indicatorColor: themeColor,
-        appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarBrightness: Brightness.light,
-            statusBarIconBrightness: Brightness.dark,
-          ),
-          elevation: 0,
-        ),
-        buttonTheme: ButtonThemeData(buttonColor: themeColor),
-        colorScheme: ColorScheme(
-          primary: Colors.grey[50]!,
-          secondary: themeColor,
-          background: Colors.grey[50]!,
-          surface: Colors.grey[50]!,
-          brightness: Brightness.light,
-          error: const Color(0xffcf6679),
-          onPrimary: Colors.white,
-          onSecondary: Colors.white,
-          onSurface: Colors.black,
-          onBackground: Colors.black,
-          onError: Colors.white,
-        ),
-      );
-    }
-    return ThemeData.dark().copyWith(
-      primaryColor: Colors.grey[900],
-      primaryColorLight: Colors.grey[900],
-      primaryColorDark: Colors.grey[900],
-      canvasColor: Colors.grey[850],
-      scaffoldBackgroundColor: Colors.grey[900],
-      cardColor: Colors.grey[900],
-      highlightColor: Colors.transparent,
-      textSelectionTheme: TextSelectionThemeData(
-        cursorColor: themeColor,
-        selectionColor: themeColor.withAlpha(100),
-        selectionHandleColor: themeColor,
-      ),
-      indicatorColor: themeColor,
-      appBarTheme: const AppBarTheme(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarBrightness: Brightness.dark,
-          statusBarIconBrightness: Brightness.light,
-        ),
-        elevation: 0,
-      ),
-      buttonTheme: ButtonThemeData(buttonColor: themeColor),
-      colorScheme: ColorScheme(
-        primary: Colors.grey[900]!,
-        secondary: themeColor,
-        background: Colors.grey[900]!,
-        surface: Colors.grey[900]!,
-        brightness: Brightness.dark,
-        error: const Color(0xffcf6679),
-        onPrimary: Colors.black,
-        onSecondary: Colors.black,
-        onSurface: Colors.white,
-        onBackground: Colors.white,
-        onError: Colors.black,
-      ),
-    );
+    return buildTheme(themeColor, light: light);
   }
 }

@@ -1,7 +1,6 @@
-//
-// [Author] Alex (https://github.com/AlexV525)
-// [Date] 2022/09/20 17:06
-//
+// Copyright 2019 The FlutterCandies author. All rights reserved.
+// Use of this source code is governed by an Apache license that can be found
+// in the LICENSE file.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +31,23 @@ void main() {
       await tester.tap(find.byIcon(Icons.keyboard_arrow_down));
       await tester.pumpAndSettle();
       expect(find.text('testPathNameBuilder'), findsOneWidget);
+    });
+  });
+
+  group('enableLivePhoto', () {
+    test('defaults to true', () {
+      const config = AssetPickerConfig();
+      expect(config.enableLivePhoto, true);
+    });
+
+    test('can be set to false', () {
+      const config = AssetPickerConfig(enableLivePhoto: false);
+      expect(config.enableLivePhoto, false);
+    });
+
+    test('can be set to true explicitly', () {
+      const config = AssetPickerConfig(enableLivePhoto: true);
+      expect(config.enableLivePhoto, true);
     });
   });
 }
