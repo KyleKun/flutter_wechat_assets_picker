@@ -715,11 +715,11 @@ abstract class AssetPickerBuilderDelegate<Asset, Path> {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder: (ctx) => AlertDialog(
+            builder: (ctx) => const AlertDialog(
               title: Text('Changing order...'),
             ),
           ).then((_) => provider.currentAssets = provider.currentAssets.reversed.toList());
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 1), () {
             Navigator.of(context).pop();
           });
         },
@@ -2502,7 +2502,7 @@ class DefaultAssetPickerBuilderDelegate<T extends DefaultAssetPickerProvider>
         width: double.maxFinite,
         height: 50,
         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 5),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: AlignmentDirectional.bottomCenter,
             end: AlignmentDirectional.topCenter,
